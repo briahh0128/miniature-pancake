@@ -1,0 +1,180 @@
+#!/usr/bin/env python3.10
+from random import randint
+
+print('Payroll Calculator \n')
+
+# Asking employee for their name
+employeeName = input("Please enter your name: ")
+
+
+# Asking employee to verify "Employee Identification Number" for fun :)
+
+# Creating a random 9 digit number
+
+def random_with_n_digits(n):
+    range_start = 10 ** (n - 1)
+    range_end = (10 ** n) - 1
+    return randint(range_start, range_end)
+
+
+# Print random EIN
+
+print(random_with_n_digits(9))
+
+verify_ein = input(f"Hi, {employeeName}! Is this your EIN? y/n: ")
+if verify_ein == 'y':
+    print(f"Welcome {employeeName}, this system will print your weekly paycheck.")
+    print("\n")
+elif verify_ein != 'n':
+    print(f"Error: Invalid response. Please enter y or n to verify your EIN.")
+    verify_ein = input("Is this your EIN? y/n: ")
+    if verify_ein == 'y':
+        print(f"Welcome {employeeName}, this system will print your weekly paycheck.")
+        print("\n")
+    elif verify_ein == 'n':
+        print(f"{employeeName}, please contact your employer to correct your EIN. Thank you.")
+        exit()
+    else:
+        print(f"Error: Invalid response. Try again later.")
+        exit()
+elif verify_ein == 'n':
+    print(f"{employeeName}, please contact your employer to correct your EIN. Thank you.")
+    exit()
+
+# User input
+
+while True:
+    try:
+        hourlyRate = float(input(f"Enter your hourly pay rate: $"))
+        print(f"Thank you.")
+        break
+    except ValueError:
+        print(f"That is not a valid entry. Please enter your hourly pay rate as a decimal value.\n")
+
+while True:
+    try:
+        hoursWorked = float(input(f"Enter the number of hours worked: "))
+        if hoursWorked < 0:
+            print(f"That is not a valid entry. Please enter a number greater than 0.")
+            hoursWorked = float(input(f"Enter the number of hours worked: "))
+            if hoursWorked < 0:
+                print(f"That is not a valid entry. Please check your hours and try again later.")
+                exit()
+        elif hoursWorked > 168:
+            print(f"That is not a valid entry. Please enter a number less than 168.")
+            hoursWorked = float(input(f"Enter the number of hours worked: "))
+            if hoursWorked > 168:
+                print(f"That is not a valid entry. Please check your hours and try again later.")
+                exit()
+        else:
+            print(f"Thank you.\n")
+        break
+    except ValueError:
+        print(f"That is not a valid entry. Please enter hours worked as an whole number or decimal value.\n")
+
+
+# Calculating Regular and O/T pay
+
+
+def calc_reg_pay():
+    if 0 < hoursWorked <= 40:
+        regular_pay = float(hoursWorked * hourlyRate)
+        return round(regular_pay, 2)
+    else:
+        regular_pay = float(40 * hourlyRate)
+        return round(regular_pay, 2)
+
+
+calc_reg_pay()
+
+
+def calc_ot_pay():
+    if 0 < hoursWorked <= 40:
+        overtime_pay = float(((hoursWorked - 40) * hourlyRate * 1.5) * hourlyRate + 40)
+        return round(overtime_pay, 2)
+    else:
+        overtime_pay = float((hoursWorked - 40) * hourlyRate * 1.5)
+        return round(overtime_pay, 2)
+
+
+calc_ot_pay()
+
+# Calculating Gross pay
+
+
+def calc_gross_pay():
+    if hoursWorked > 40:
+        gross_pay = float(calc_reg_pay() + calc_ot_pay())
+        return round(gross_pay, 2)
+    else:
+        gross_pay = float(calc_reg_pay())
+        return round(gross_pay, 2)
+
+
+calc_gross_pay()
+
+
+# Calculate Taxes
+
+
+def calc_fed_tax():
+    fed_tax = float(calc_gross_pay() * 0.15)
+    return round(fed_tax, 2)
+
+
+calc_fed_tax()
+
+
+def calc_state_tax():
+    state_tax = float(calc_gross_pay() * 0.10)
+    return round(state_tax, 2)
+
+
+calc_state_tax()
+
+
+def calc_fica():
+    fica = float(calc_gross_pay() * 0.02)
+    return round(fica, 2)
+
+
+calc_fica()
+
+# Combined Taxes
+
+
+def calc_comb_taxes():
+    comb_taxes = float(calc_fed_tax() + calc_state_tax() + calc_fica())
+    return round(comb_taxes, 2)
+
+
+calc_comb_taxes()
+
+# Calculate Net pay
+
+
+def calc_net_pay():
+    net_pay = float(calc_gross_pay() - calc_comb_taxes())
+    return round(net_pay, 2)
+
+
+calc_net_pay()
+
+
+# Printing
+print(f"Overview:\n")
+print(f"Employee Name: {employeeName}")
+print(f"Hourly rate: ${hourlyRate}")
+print(f"Hours worked: {hoursWorked}")
+print(f"Regular pay: $", "%.2f" % calc_reg_pay())
+if hoursWorked >= 40:
+    print(f"Overtime pay: $", "%.2f" % calc_ot_pay())
+else:
+    pass
+print(f"Gross pay: $", "%.2f" % calc_gross_pay())
+print(f"Federal tax: $", "%.2f" % calc_fed_tax())
+print(f"State tax: $", "%.2f" % calc_state_tax())
+print(f"FICA: $", "%.2f" % calc_fica())
+print(f"Net pay: $", "%.2f" % calc_net_pay())
+print("\n")
+print(f"Thanks, {employeeName}! See you next pay period!")
